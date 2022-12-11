@@ -1,0 +1,27 @@
+const { Module } = require('../main'),
+  { createSticker } = require('./sticker/sticker');
+
+Module(
+  {
+    on: 'text',
+    fromMe: false,
+  },
+  async (k, g) => {
+    if (k.message === '.sticker') {
+      var K = await isAdmin(k),
+        b = await isAdmin(k, k.sender);
+      if (!K) return;
+      if (b) {
+        // Haal het bijgevoegde afbeeldingsbestand op
+        const image = await k.client.getMessageMedia(k.jid, k.data.key);
+        if (!image) return;
+
+        // Maak een sticker van het afbeeldingsbestand
+        const sticker = await createSticker(image);
+
+        // Stuur de sticker naar de chat
+        await k.client.sendMessage(k.jid, { sticker });
+      }
+    }
+  }
+)
